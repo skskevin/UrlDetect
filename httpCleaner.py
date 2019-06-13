@@ -56,7 +56,7 @@ def paramValFilter(paramVal):
 def getDeepJsonVal(data, result=[]):
     if isinstance(data, dict):
         for key, value in data.items():
-            getDeepJsonVal(value, key, result)
+            getDeepJsonVal(value, result)
     elif isinstance(data, list):
         for value in data:
             getDeepJsonVal(value)
