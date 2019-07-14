@@ -222,8 +222,9 @@ class DomainTokenizer():
 
 
 
-demo = ["192.168.1.1", "mp3.com","http:www.g.cn","http:\www.g.cn","http:\\/\www.g.cn", "admin:@www.g.cn","http://10.10.10.10:8080/?a=1","file://test11.com:8090/file","mailto:majy@corp.com","username:password@g.cn"]
+#demo = ["192.168.1.1", "mp3.com","http:www.g.cn","http:\www.g.cn","http:\\/\www.g.cn", "admin:@www.g.cn","http://10.10.10.10:8080/?a=1","file://test11.com:8090/file","mailto:majy@corp.com","username:password@g.cn"]
+demo = ["http:\\/\www.baidu.com www.sina.com.cn username:password@www.g.cn file://10.1.1.1/aa ftp://test:test@192.168.0.1:21/profile"]
 for d in demo:
     parser = DomainTokenizer()
     parser.RunParser(d)
-    print d,parser.urls
+    print parser.urls
