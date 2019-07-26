@@ -716,3 +716,6 @@ class Backend(object):
 
         return dbmsVersion
 
+def setCookie(cookie):
+    cookie = "Cookie: " + cookie
+    conf.default_header.append(cookie)

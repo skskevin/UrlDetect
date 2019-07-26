@@ -19,7 +19,7 @@ from lib.utils.common import cleanupVals
 from lib.utils.common import parseXmlFile
 from lib.request.queryPage import proxyqueryPage
 from lib.utils.common import readCachedFileContent
-from lib.utils.common import urlencode, getUnicode
+from lib.utils.common import urlencode, getUnicode,setCookie
 from lib.utils.common import paramToDict_t, urldecode, Backend
 from lib.utils.common import extractTextTagContent, InjectionDict, intersect
 from lib.utils.checks import checkDynParam, checkDynParam_t, HTTPCheck, checkTimeBasedCompare
@@ -468,6 +468,7 @@ def start(url):
 
 if __name__ == '__main__':
     Init()
-    start("http://localhost/test.php?id=1")
-    # start("http://dvwa.suicao.com/vulnerabilities/sqli/?id=1&Submit=Submit#")
+    # start("http://localhost/test.php?id=1")
+    setCookie("PHPSESSID=0cac79e9e449cd52de688c5ef9f8d816; security=low")
+    start("http://dvwa.suicao.com/vulnerabilities/sqli/?id=1&Submit=Submit#")
     # print kb
