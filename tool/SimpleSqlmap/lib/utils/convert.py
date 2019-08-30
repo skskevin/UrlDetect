@@ -4,13 +4,15 @@
 Copyright (c) 2006-2015 sqlmap developers (http://sqlmap.org/)
 See the file 'doc/COPYING' for copying permission
 """
-
+import re
 import base64
 import json
 import pickle
 import sys
+import binascii
+from thirdparty import six
 
-IS_WIN = subprocess.mswindows
+# IS_WIN = subprocess.mswindows
 UNICODE_ENCODING = "utf8"
 
 def base64decode(value):
@@ -197,3 +199,87 @@ def dejsonize(data):
     """
 
     return json.loads(data)
+
+def getBytes(value, encoding=UNICODE_ENCODING, errors="strict", unsafe=True):
+    """
+    Returns byte representation of provided Unicode value
+
+    >>> getBytes(u"foo\\\\x01\\\\x83\\\\xffbar") == b"foo\\x01\\x83\\xffbar"
+    True
+    """
+
+    retVal = value
+
+    if isinstance(value, six.text_type):
+        retVal = value.encode(encoding, errors)
+
+        if unsafe:
+            retVal = re.sub(b"\\\\x([0-9a-f]{2})", lambda _: decodeHex(_.group(1)), retVal)
+
+    return retVal
+
+
+def getOrds(value):
+    """
+    Returns ORD(...) representation of provided string value
+
+    >>> getOrds(u'fo\\xf6bar')
+    [102, 111, 246, 98, 97, 114]
+    >>> getOrds(b"fo\\xc3\\xb6bar")
+    [102, 111, 195, 182, 98, 97, 114]
+    """
+
+    return [_ if isinstance(_, int) else ord(_) for _ in value]
+
+
+def getText(value):
+    """
+    Returns textual value of a given value (Note: not necessary Unicode on Python2)
+
+    >>> getText(b"foobar")
+    'foobar'
+    >>> isinstance(getText(u"fo\\u2299bar"), six.text_type)
+    True
+    """
+
+    retVal = value
+
+    if isinstance(value, six.binary_type):
+        retVal = getUnicode(value)
+
+    if six.PY2:
+        try:
+            retVal = str(retVal)
+        except:
+            pass
+
+    return retVal
+
+
+def decodeHex(value, binary=True):
+    """
+    Returns a decoded representation of provided hexadecimal value
+
+    >>> decodeHex("313233") == b"123"
+    True
+    >>> decodeHex("313233", binary=False) == u"123"
+    True
+    """
+
+    retVal = value
+
+    if isinstance(value, six.binary_type):
+        value = getText(value)
+
+    if value.lower().startswith("0x"):
+        value = value[2:]
+
+    try:
+        retVal = codecs.decode(value, "hex")
+    except LookupError:
+        retVal = binascii.unhexlify(value)
+
+    if not binary:
+        retVal = getText(retVal)
+
+    return retVal

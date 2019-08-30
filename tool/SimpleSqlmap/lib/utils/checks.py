@@ -40,6 +40,55 @@ def checkPageStability(firstPage, secondPage):
     except:
         return False   
 
+def checkComparison(firstPage, secondPage):
+        seqMatcher = difflib.SequenceMatcher(None)
+        seqMatcher.set_seq1(firstPage)
+
+        pageLength = len(secondPage)
+
+        seq1, seq2 = None, None
+
+        seq1 = seqMatcher.a
+        seq2 = secondPage
+
+
+        if seq1 is None or seq2 is None:
+            return None
+
+        count = 0
+        while count < min(len(seq1), len(seq2)):
+            if seq1[count] == seq2[count]:
+                count += 1
+            else:
+                break
+        if count:
+            seq1 = seq1[count:]
+            seq2 = seq2[count:]
+
+        while True:
+            try:
+                seqMatcher.set_seq1(seq1)
+            except MemoryError:
+                seq1 = seq1[:len(seq1) / 1024]
+            else:
+                break
+
+        while True:
+            try:
+                seqMatcher.set_seq2(seq2)
+            except MemoryError:
+                seq2 = seq2[:len(seq2) / 1024]
+            else:
+                break
+
+        ratio = round(seqMatcher.quick_ratio(), 3)
+
+      
+        if ratio > UPPER_RATIO_BOUND:
+            return True
+        else:
+            return False
+
 def diffRatio(pageA, pageB):
         seqMatcher = difflib.SequenceMatcher(None)
         seqMatcher.set_seq1(pageA)
@@ -205,15 +254,18 @@ class HTTPCheck:
         try:
             urlSplit = urlparse(self.url_str)
             socket.getaddrinfo(urlSplit.hostname, None)
-        except:
+        except Exception, e:
+            print e
             return False
         try:
             self.originalPageTime = time.time()
             h_response = queryPage(self.url_str, noteResponseTime=False)
             self.firstPage = h_response.getdata()
+            kb.pageTemplate = h_response.getdata()
             self.firstCode = h_response.getstatus()
             return True
-        except:
+        except Exception, e:
+            print e
             return False
 
      def checkPageStability(self,page,pagecode):

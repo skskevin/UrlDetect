@@ -7,6 +7,7 @@ import random
 import string
 import urllib
 import contextlib
+import collections
 from StringIO import StringIO
 import os
 import codecs
@@ -15,10 +16,13 @@ from xml.sax import parse
 import types
 import copy
 from thirdparty import six
+from thirdparty.six.moves import zip as _zip
 from lib.config import conf,kb
 from lib.data import AttribDict
 from lib.utils.bigarray import BigArray
-from lib.utils.enums import PLACE, CUSTOM_INJECTION_MARK_CHAR, UNICODE_ENCODING, PARAMETER_AMP_MARKER, PARAMETER_SEMICOLON_MARKER, DEFAULT_GET_POST_DELIMITER, TEXT_TAG_REGEX, REFLECTED_VALUE_MARKER
+from lib.utils.enums import PLACE, CUSTOM_INJECTION_MARK_CHAR, UNICODE_ENCODING
+from lib.utils.enums import PARAMETER_AMP_MARKER, PARAMETER_SEMICOLON_MARKER, DEFAULT_GET_POST_DELIMITER
+from lib.utils.enums import TEXT_TAG_REGEX, REFLECTED_VALUE_MARKER,DBMS_DICT
 
 
 
@@ -523,14 +527,14 @@ def paramToDict(parameters=None):
             if not intersect(USER_AGENT_ALIASES + REFERER_ALIASES + HOST_ALIASES, parameter, True):
                 debugMsg = "provided parameter '%s' " % paramStr
                 debugMsg += "is not inside the %s" % place
-                logger.debug(debugMsg)
+                print(debugMsg)
 
     elif len(conf.testParameter) != len(testableParameters.keys()):
         for parameter in conf.testParameter:
             if parameter not in testableParameters:
                 debugMsg = "provided parameter '%s' " % parameter
                 debugMsg += "is not inside the %s" % place
-                logger.debug(debugMsg)
+                print(debugMsg)
 
     if testableParameters:
         for parameter, value in testableParameters.items():
@@ -708,6 +712,16 @@ def average(values):
 
 
 class Backend(object):
+    @staticmethod
+    def setDbms(dbms):
+        dbms = aliasToDbmsEnum(dbms)
+
+        if dbms is None:
+            return None
+        elif kb.dbms is None:
+            kb.dbms = aliasToDbmsEnum(dbms)
+
+        return kb.dbms
 
     @staticmethod
     def setVersion(version):
@@ -716,6 +730,259 @@ class Backend(object):
 
         return dbmsVersion
 
+    @staticmethod
+    def getDbms():
+        return aliasToDbmsEnum(kb.get("dbms"))
+
+    # Get methods
+    @staticmethod
+    def getForcedDbms():
+        return aliasToDbmsEnum(kb.get("forcedDbms"))
+
+    @staticmethod
+    def getIdentifiedDbms():
+        """
+        This functions is called to:
+
+        1. Sort the tests, getSortedInjectionTests() - detection phase.
+        2. Etc.
+        """
+
+        dbms = None
+
+        if not kb:
+            pass
+        elif not kb.get("testMode") and conf.get("dbmsHandler") and getattr(conf.dbmsHandler, "_dbms", None):
+            dbms = conf.dbmsHandler._dbms
+        elif Backend.getForcedDbms() is not None:
+            dbms = Backend.getForcedDbms()
+        elif Backend.getDbms() is not None:
+            dbms = Backend.getDbms()
+        elif kb.get("injection") and kb.injection.dbms:
+            dbms = unArrayizeValue(kb.injection.dbms)
+        elif Backend.getErrorParsedDBMSes():
+            dbms = unArrayizeValue(Backend.getErrorParsedDBMSes())
+        elif conf.get("dbms"):
+            dbms = conf.get("dbms")
+
+        return aliasToDbmsEnum(dbms)
+
+    @staticmethod
+    def isDbms(dbms):
+        return Backend.getIdentifiedDbms() == aliasToDbmsEnum(dbms)
+
+
 def setCookie(cookie):
     cookie = "Cookie: " + cookie
     conf.default_header.append(cookie)
+
+
+def isNullValue(value):
+    """
+    Returns whether the value contains explicit 'NULL' value
+
+    >>> isNullValue(u'NULL')
+    True
+    >>> isNullValue(u'foobar')
+    False
+    """
+    print hasattr(value, "upper") and value.upper() == 'NULL'
+    return hasattr(value, "upper") and value.upper() == 'NULL'
+
+
+def zeroDepthSearch(expression, value):
+    """
+    Searches occurrences of value inside expression at 0-depth level
+    regarding the parentheses
+
+    >>> _ = "SELECT (SELECT id FROM users WHERE 2>1) AS result FROM DUAL"; _[zeroDepthSearch(_, "FROM")[0]:]
+    'FROM DUAL'
+    """
+
+    retVal = []
+
+    depth = 0
+    for index in xrange(len(expression)):
+        if expression[index] == '(':
+            depth += 1
+        elif expression[index] == ')':
+            depth -= 1
+        elif depth == 0 and expression[index:index + len(value)] == value:
+            retVal.append(index)
+
+    return retVal
+
+
+def splitFields(fields, delimiter=','):
+    """
+    Returns list of (0-depth) fields splitted by delimiter
+
+    >>> splitFields('foo, bar, max(foo, bar)')
+    ['foo', 'bar', 'max(foo,bar)']
+    """
+
+    fields = fields.replace("%s " % delimiter, delimiter)
+    commas = [-1, len(fields)]
+    commas.extend(zeroDepthSearch(fields, ','))
+    commas = sorted(commas)
+
+    return [fields[x + 1:y] for (x, y) in _zip(commas, commas[1:])]
+
+
+def aliasToDbmsEnum(dbms):
+    """
+    Returns major DBMS name from a given alias
+
+    >>> aliasToDbmsEnum('mssql')
+    'Microsoft SQL Server'
+    """
+
+    retVal = None
+
+    if dbms:
+        for key, item in DBMS_DICT.items():
+            if dbms.lower() in item[0] or dbms.lower() == key.lower():
+                retVal = key
+                break
+
+    return retVal
+
+
+def unArrayizeValue(value):
+    """
+    Makes a value out of iterable if it is a list or tuple itself
+
+    >>> unArrayizeValue(['1'])
+    '1'
+    >>> unArrayizeValue(['1', '2'])
+    '1'
+    >>> unArrayizeValue([['a', 'b'], 'c'])
+    'a'
+    >>> unArrayizeValue(_ for _ in xrange(10))
+    0
+    """
+
+    if isListLike(value):
+        if not value:
+            value = None
+        elif len(value) == 1 and not isListLike(value[0]):
+            value = value[0]
+        else:
+            value = [_ for _ in flattenValue(value) if _ is not None]
+            value = value[0] if len(value) > 0 else None
+    elif inspect.isgenerator(value):
+        value = unArrayizeValue([_ for _ in value])
+
+    return value
+
+def filterStringValue(value, charRegex, replacement=""):
+    """
+    Returns string value consisting only of chars satisfying supplied
+    regular expression (note: it has to be in form [...])
+
+    >>> filterStringValue('wzydeadbeef0123#', r'[0-9a-f]')
+    'deadbeef0123'
+    """
+
+    retVal = value
+
+    if value:
+        retVal = re.sub(charRegex.replace("[", "[^") if "[^" not in charRegex else charRegex.replace("[^", "["), replacement, value)
+
+    return retVal
+
+
+def removeReflectiveValues(content, payload, suppressWarning=False):
+    """
+    Neutralizes reflective values in a given content based on a payload
+    (e.g. ..search.php?q=1 AND 1=2 --> "...searching for <b>1%20AND%201%3D2</b>..." --> "...searching for <b>__REFLECTED_VALUE__</b>...")
+    """
+
+    retVal = content
+
+    try:
+        if all((content, payload)) and isinstance(content, six.text_type) and kb.reflectiveMechanism and not kb.heuristicMode:
+            def _(value):
+                while 2 * REFLECTED_REPLACEMENT_REGEX in value:
+                    value = value.replace(2 * REFLECTED_REPLACEMENT_REGEX, REFLECTED_REPLACEMENT_REGEX)
+                return value
+
+            payload = getUnicode(urldecode(payload.replace(PAYLOAD_DELIMITER, ""), convall=True))
+            regex = _(filterStringValue(payload, r"[A-Za-z0-9]", encodeStringEscape(REFLECTED_REPLACEMENT_REGEX)))
+
+            if regex != payload:
+                if all(part.lower() in content.lower() for part in filterNone(regex.split(REFLECTED_REPLACEMENT_REGEX))[1:]):  # fast optimization check
+                    parts = regex.split(REFLECTED_REPLACEMENT_REGEX)
+
+                    # Note: naive approach
+                    retVal = content.replace(payload, REFLECTED_VALUE_MARKER)
+                    retVal = retVal.replace(re.sub(r"\A\w+", "", payload), REFLECTED_VALUE_MARKER)
+
+                    if len(parts) > REFLECTED_MAX_REGEX_PARTS:  # preventing CPU hogs
+                        regex = _("%s%s%s" % (REFLECTED_REPLACEMENT_REGEX.join(parts[:REFLECTED_MAX_REGEX_PARTS // 2]), REFLECTED_REPLACEMENT_REGEX, REFLECTED_REPLACEMENT_REGEX.join(parts[-REFLECTED_MAX_REGEX_PARTS // 2:])))
+
+                    parts = filterNone(regex.split(REFLECTED_REPLACEMENT_REGEX))
+
+                    if regex.startswith(REFLECTED_REPLACEMENT_REGEX):
+                        regex = r"%s%s" % (REFLECTED_BORDER_REGEX, regex[len(REFLECTED_REPLACEMENT_REGEX):])
+                    else:
+                        regex = r"\b%s" % regex
+
+                    if regex.endswith(REFLECTED_REPLACEMENT_REGEX):
+                        regex = r"%s%s" % (regex[:-len(REFLECTED_REPLACEMENT_REGEX)], REFLECTED_BORDER_REGEX)
+                    else:
+                        regex = r"%s\b" % regex
+
+                    _retVal = [retVal]
+
+                    def _thread(regex):
+                        try:
+                            _retVal[0] = re.sub(r"(?i)%s" % regex, REFLECTED_VALUE_MARKER, _retVal[0])
+
+                            if len(parts) > 2:
+                                regex = REFLECTED_REPLACEMENT_REGEX.join(parts[1:])
+                                _retVal[0] = re.sub(r"(?i)\b%s\b" % regex, REFLECTED_VALUE_MARKER, _retVal[0])
+                        except KeyboardInterrupt:
+                            raise
+                        except:
+                            pass
+
+                    thread = threading.Thread(target=_thread, args=(regex,))
+                    thread.daemon = True
+                    thread.start()
+                    thread.join(REFLECTED_REPLACEMENT_TIMEOUT)
+
+                    if thread.isAlive():
+                        kb.reflectiveMechanism = False
+                        retVal = content
+                        if not suppressWarning:
+                            debugMsg = "turning off reflection removal mechanism (because of timeouts)"
+                            print(debugMsg)
+                    else:
+                        retVal = _retVal[0]
+
+                if retVal != content:
+                    kb.reflectiveCounters[REFLECTIVE_COUNTER.HIT] += 1
+                    if not suppressWarning:
+                        warnMsg = "reflective value(s) found and filtering out"
+                        singleTimeWarnMessage(warnMsg)
+
+                    if re.search(r"(?i)FRAME[^>]+src=[^>]*%s" % REFLECTED_VALUE_MARKER, retVal):
+                        warnMsg = "frames detected containing attacked parameter values. Please be sure to "
+                        warnMsg += "test those separately in case that attack on this page fails"
+                        singleTimeWarnMessage(warnMsg)
+
+                elif not kb.testMode and not kb.reflectiveCounters[REFLECTIVE_COUNTER.HIT]:
+                    kb.reflectiveCounters[REFLECTIVE_COUNTER.MISS] += 1
+                    if kb.reflectiveCounters[REFLECTIVE_COUNTER.MISS] > REFLECTIVE_MISS_THRESHOLD:
+                        kb.reflectiveMechanism = False
+                        if not suppressWarning:
+                            debugMsg = "turning off reflection removal mechanism (for optimization purposes)"
+                            print(debugMsg)
+    except MemoryError:
+        kb.reflectiveMechanism = False
+        if not suppressWarning:
+            debugMsg = "turning off reflection removal mechanism (because of low memory issues)"
+            print(debugMsg)
+
+    return retVal

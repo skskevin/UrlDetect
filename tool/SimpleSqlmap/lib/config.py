@@ -26,14 +26,20 @@ conf.boundaries = []
 conf.parameters = {}
 conf.tests = []
 conf.timeSec = 5
+conf.uChar = None
+conf.uCols = None
+conf.uFrom = None
 
 conf.default_header = ["Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         #"Accept-Encoding": "gzip, deflate",
         "Accept-Language: zh,zh-cn;q=0.8,en-us;q=0.5,en;q=0.3", 
         "Connection: keep-alive",
+        # "Cookie: PHPSESSID=0cac79e9e449cd52de688c5ef9f8d816; security=low",
         "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36"] 
-
 
 kb = AttribDict()
 kb.responseTimes = []
 kb.dbms = None
+kb.orderByColumns = None
+kb.uChar = 'NULL'
+kb.tableFrom = None
